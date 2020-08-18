@@ -4,9 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "compile": "tsc"
+    "start": "parcel ./src/public/index.html --open",
+    "build": "parcel build ./src/public/index.html --public-url ./ --no-source-maps"
   },
   "devDependencies": {
+    "parcel-bundler": "^1.12.4",
     "typescript": "^3.9.7"
   }
 }
