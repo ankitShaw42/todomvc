@@ -1,5 +1,3 @@
-import { TodoItem } from './model';
-
 export default class TodoListView {
   constructor(eventEmitter) {
     this.eventEmitter = eventEmitter;
@@ -17,7 +15,8 @@ export default class TodoListView {
     // addTodo event
     this.todoAddForm.addEventListener('submit', (event) => {
       event.preventDefault();
-      this.eventEmitter.trigger('addTodo');
+      this.eventEmitter.trigger('addTodo', this.todoInput.value);
+      this.todoInput.value = '';
     });
 
     // toggleTodo event
@@ -27,49 +26,56 @@ export default class TodoListView {
         this.eventEmitter.trigger('toggleTodo', parseInt(targetID));
       }
     });
-  }
 
-  clearInput() {
-    this.todoInput.value = '';
-  }
+    // removeTodo event
+    this.todoListUL.addEventListener('click', (event) => {
+      if ('delete' === event.target.getAttribute('data-action')) {
+        const targetID = event.target.parentNode.id;
+        this.eventEmitter.trigger('deleteTodo', parseInt(targetID));
+      }
+    });
 
-  getInput() {
-    const todoInputValue = this.todoInput.value.trim();
-    return new TodoItem(todoInputValue);
+    //editTodo event
+    this.todoListUL.addEventListener('focusout', (event) => {
+      if ('edit' === event.target.getAttribute('data-action')) {
+        const targetID = event.target.parentNode.id;
+        this.eventEmitter.trigger(
+          'editTodo',
+          parseInt(targetID),
+          event.target.innerText
+        );
+      }
+    });
   }
 
   render(todoList) {
-    console.log('Updating the rendered todo list');
     this.todoListUL.innerHTML = '';
-
     this.buildTodoList(todoList);
   }
 
   buildTodoList(todoList) {
-    const ul = document.createElement('ul');
-    ul.setAttribute('id', 'todo-list');
-    this.todoListUL.appendChild(ul);
-
     const todoItems = todoList
       .map(
         (item) => `
       <li class="todo-item ${item.complete ? 'complete' : ''}" id=${item.id}>
         <span class="todo-item__toggler" data-action="toggle"></span>
-        <span class="todo-item__text" contenteditable>${item.content}</span>
-        <span class="todo-item__delete">×</span>
+        <span class="todo-item__text" contenteditable data-action="edit">${
+          item.content
+        }</span>
+        <span class="todo-item__delete" data-action="delete">×</span>
       </li>
     `
       )
       .join('\n');
 
-    ul.insertAdjacentHTML('beforeend', todoItems);
+    this.todoListUL.insertAdjacentHTML('beforeend', todoItems);
   }
 
   static renderInitialTemplate() {
-    let appTarget = document.getElementById('app');
+    const appTarget = document.getElementById('app');
+
     if (!appTarget) {
-      appTarget = document.createElement('main');
-      document.body.appendChild(appTarget);
+      throw new Error('App requires an HTML element with id `app` to render.');
     }
 
     appTarget.insertAdjacentHTML(
@@ -80,7 +86,7 @@ export default class TodoListView {
         </header>
 
         <section class="app-container">
-          <form class="todo-form">
+          <form class="todo-form" autocomplete="off">
             <span class="todo-form__toggler">‹</span>
 
             <input

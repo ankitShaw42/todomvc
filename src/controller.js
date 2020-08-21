@@ -4,45 +4,38 @@ export default class TodoListController {
     this.view = view;
     this.eventEmitter = eventEmitter;
 
-    this.render();
+    this.onUpdate();
     this.addEventListeners();
   }
 
   addEventListeners() {
     // addTodo Listener
-    this.eventEmitter.on('addTodo', () => {
-      this.addTodo();
+    this.eventEmitter.on('addTodo', (todoText) => {
+      this.model.addTodo(todoText);
+      this.onUpdate();
     });
 
+    // toggleTodo Listener
     this.eventEmitter.on('toggleTodo', (targetID) => {
-      console.log(targetID);
       this.model.toggleTodo(targetID);
-      this.render();
+      this.onUpdate();
+    });
+
+    // deleteTodo Listener
+    this.eventEmitter.on('deleteTodo', (targetID) => {
+      this.model.removeTodo(targetID);
+      this.onUpdate();
+    });
+
+    // editTodo Listener
+    this.eventEmitter.on('editTodo', (targetID, updateText) => {
+      this.model.editTodo(targetID, updateText);
+      this.onUpdate();
     });
   }
 
-  render() {
-    this.view.render(this.model.todoList);
-  }
-
-  addTodo() {
-    const newTodo = this.view.getInput();
-    console.log(newTodo);
-
-    if ('' === newTodo.content.trim()) {
-      return;
-    }
-
-    this.model.addTodo(newTodo);
-
-    this.view.clearInput();
-
-    this.render();
-  }
-
-  removeTodo(id) {
-    this.model.removeTodo(id);
-    this.view.render(this.model.todoList);
-    this.filterTodoList();
+  onUpdate() {
+    this.view.render(this.model.todos);
+    localStorage.setItem('todos', JSON.stringify(this.model.todos));
   }
 }
