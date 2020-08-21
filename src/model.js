@@ -2,31 +2,23 @@ export class TodoItem {
   static ITEM_COUNT = 1;
 
   constructor(_content) {
-    this._id = TodoItem.ITEM_COUNT;
-    this._complete = false;
+    this.id = TodoItem.ITEM_COUNT;
+    this.complete = false;
+    this.content = _content;
     TodoItem.ITEM_COUNT += 1;
   }
 
-  get id() {
-    return this._id;
-  }
-
-  get content() {
-    return this._content;
-  }
-
-  get complete() {
-    return this._complete;
-  }
-
   toggle() {
-    this._complete = !this._complete;
+    this.complete = !this.complete;
   }
 }
 
 export default class TodoListModel {
   constructor() {
-    this._todoList = [];
+    this._todoList = [
+      new TodoItem('Learn Javascript'),
+      new TodoItem('Learn React'),
+    ];
   }
 
   get todoList() {
@@ -42,7 +34,7 @@ export default class TodoListModel {
   }
 
   addTodo(todoItem) {
-    if (!todoItem) {
+    if ('' === todoItem.content.trim()) {
       return;
     }
 
@@ -50,23 +42,12 @@ export default class TodoListModel {
   }
 
   removeTodo(itemId) {
-    if (!itemId) {
-      return;
-    }
-
     this._todoList = this._todoList.filter((item) => item.id !== itemId);
   }
 
   toggleTodo(itemId) {
-    if (!itemId) {
-      return;
-    }
-
     const targetItem = this._todoList.find((item) => item.id === itemId);
-
-    if (!targetItem) {
-      return;
-    }
+    console.log(targetItem);
 
     targetItem.toggle();
   }

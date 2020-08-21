@@ -30,9 +30,13 @@ ul {
 
 /* utilities */
 
-.complete {
+.complete .todo-item__text {
   text-decoration: line-through;
   color: #d9d9d9;
+}
+
+.complete .todo-item__toggler::after {
+  display: block;
 }
 
 .is-hidden {
@@ -143,6 +147,10 @@ ul {
   left: 0.15rem;
   bottom: -0.5rem;
   display: none;
+}
+
+.complete.todo-item__toggler:after {
+  display: block;
 }
 
 .todo-item__text {

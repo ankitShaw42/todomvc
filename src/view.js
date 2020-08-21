@@ -1,28 +1,36 @@
 import { TodoItem } from './model';
 
 export default class TodoListView {
-  constructor() {
+  constructor(eventEmitter) {
+    this.eventEmitter = eventEmitter;
+
     TodoListView.renderInitialTemplate();
 
     this.todoInput = document.getElementById('todo-input');
     this.todoListUL = document.querySelector('.todo-list');
-    this.todoListFilter = document.getElementById('todo-filter');
     this.todoAddForm = document.querySelector('.todo-form');
 
-    console.log(
-      this.todoInput,
-      this.todoListUL,
-      this.todoListFilter,
-      this.todoAddForm
-    );
+    this.handleEvents();
+  }
+
+  handleEvents() {
+    // addTodo event
+    this.todoAddForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      this.eventEmitter.trigger('addTodo');
+    });
+
+    // toggleTodo event
+    this.todoListUL.addEventListener('click', (event) => {
+      if ('toggle' === event.target.getAttribute('data-action')) {
+        const targetID = event.target.parentNode.id;
+        this.eventEmitter.trigger('toggleTodo', parseInt(targetID));
+      }
+    });
   }
 
   clearInput() {
     this.todoInput.value = '';
-  }
-
-  getFilter() {
-    return this.todoListFilter.value.toLowerCase();
   }
 
   getInput() {
@@ -34,39 +42,27 @@ export default class TodoListView {
     console.log('Updating the rendered todo list');
     this.todoListUL.innerHTML = '';
 
+    this.buildTodoList(todoList);
+  }
+
+  buildTodoList(todoList) {
     const ul = document.createElement('ul');
     ul.setAttribute('id', 'todo-list');
     this.todoListUL.appendChild(ul);
 
-    todoList.forEach((item) => {
-      const todoItem = document.createElement('li');
-      todoItem.setAttribute('class', 'todo-list-item');
+    const todoItems = todoList
+      .map(
+        (item) => `
+      <li class="todo-item ${item.complete ? 'complete' : ''}" id=${item.id}>
+        <span class="todo-item__toggler" data-action="toggle"></span>
+        <span class="todo-item__text" contenteditable>${item.content}</span>
+        <span class="todo-item__delete">×</span>
+      </li>
+    `
+      )
+      .join('\n');
 
-      todoItem.addEventListener('click', () => {
-        // `todoIt` is not in this scope
-        todoIt.removeTodo(item.id);
-      });
-
-      todoItem.innerHTML = `<span>${item.content}</span>`;
-      ul.appendChild(todoItem);
-    });
-  }
-
-  filter() {
-    const todoListHtml = document.getElementById('todo-list');
-
-    const todoListFilterText = this.getFilter();
-    todoListHtml.childNodes.forEach((item) => {
-      const itemText = item.textContent;
-
-      if (itemText !== null) {
-        if (itemText.toLowerCase().indexOf(todoListFilterText) > -1) {
-          item.style.display = 'list-item';
-        } else {
-          item.style.display = 'none';
-        }
-      }
-    });
+    ul.insertAdjacentHTML('beforeend', todoItems);
   }
 
   static renderInitialTemplate() {
@@ -99,9 +95,6 @@ export default class TodoListView {
 
           <footer class="app-footer" style="display: none;"></footer>
         </section>
-
-        <input type="text" id="todo-filter" />
-
     `
     );
   }
