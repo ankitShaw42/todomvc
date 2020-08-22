@@ -1,12 +1,12 @@
 export default class TodoListView {
   constructor(eventEmitter) {
-    this.eventEmitter = eventEmitter;
-
     TodoListView.renderInitialTemplate();
 
+    this.eventEmitter = eventEmitter;
     this.todoInput = document.getElementById('todo-input');
     this.todoListUL = document.querySelector('.todo-list');
     this.todoAddForm = document.querySelector('.todo-form');
+    this.todoFooter = document.querySelector('.app-footer');
 
     this.handleEvents();
   }
@@ -46,15 +46,47 @@ export default class TodoListView {
         );
       }
     });
+
+    // toggleAll event
+    this.todoAddForm.addEventListener('click', (event) => {
+      if ('toggle-all' === event.target.getAttribute('data-action')) {
+        this.eventEmitter.trigger('toggleAll');
+      }
+    });
   }
 
-  render(todoList) {
+  render(todos) {
     this.todoListUL.innerHTML = '';
-    this.buildTodoList(todoList);
+    this.todoFooter.innerHTML = '';
+    this.buildTodoList(todos);
+
+    if (todos.length > 0) {
+      this.renderFooter(todos);
+    }
   }
 
-  buildTodoList(todoList) {
-    const todoItems = todoList
+  renderFooter(todos) {
+    const completedTodos = todos.filter((todo) => todo.complete);
+    const remainingTodos = todos.length - completedTodos.length;
+
+    this.todoFooter.classList.remove('is-hidden');
+    this.todoFooter.insertAdjacentHTML(
+      'beforeend',
+      `
+        <span>${remainingTodos} items left</span>
+        <div class="filters">
+          <span>All</span>
+          <span>Active</span>
+          <span>Completed</span>
+        </div>
+
+        <span class="clear">Clear completed</span>
+      `
+    );
+  }
+
+  buildTodoList(todos) {
+    const todoItems = todos
       .map(
         (item) => `
       <li class="todo-item ${item.complete ? 'complete' : ''}" id=${item.id}>
@@ -87,7 +119,7 @@ export default class TodoListView {
 
         <section class="app-container">
           <form class="todo-form" autocomplete="off">
-            <span class="todo-form__toggler">‹</span>
+            <span class="todo-form__toggler" data-action="toggle-all">‹</span>
 
             <input
               type="text"
@@ -99,7 +131,7 @@ export default class TodoListView {
 
           <ul class="todo-list"></ul>
 
-          <footer class="app-footer" style="display: none;"></footer>
+          <footer class="app-footer is-hidden"></footer>
         </section>
     `
     );

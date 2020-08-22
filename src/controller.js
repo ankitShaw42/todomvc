@@ -32,6 +32,11 @@ export default class TodoListController {
       this.model.editTodo(targetID, updateText);
       this.onUpdate();
     });
+
+    this.eventEmitter.on('toggleAll', () => {
+      this.model.toggleAllTodos();
+      this.onUpdate();
+    });
   }
 
   onUpdate() {

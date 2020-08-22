@@ -34,10 +34,4 @@ class EventEmitter {
 
 const eventEmitter = new EventEmitter();
 
-// eventEmitter.on('data', (arg1, arg2) => {
-//   console.log('Hello,', arg1, arg2);
-// });
-
-// eventEmitter.trigger('data', 'World!', 'Bye', 'World');
-
 export default eventEmitter;

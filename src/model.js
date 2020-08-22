@@ -42,6 +42,16 @@ export default class TodoListModel {
     );
   }
 
+  toggleAllTodos() {
+    const allComplete = this.todos.every((todo) => todo.complete);
+
+    if (allComplete) {
+      this.todos = this.todos.map((todo) => ({ ...todo, complete: false }));
+    } else {
+      this.todos = this.todos.map((todo) => ({ ...todo, complete: true }));
+    }
+  }
+
   editTodo(itemID, updateText) {
     if (this.isEmpty(updateText)) {
       return;
