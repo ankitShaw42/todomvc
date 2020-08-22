@@ -52,6 +52,10 @@ export default class TodoListModel {
     }
   }
 
+  removeCompleted() {
+    this.todos = this.todos.filter((todo) => !todo.complete);
+  }
+
   editTodo(itemID, updateText) {
     if (this.isEmpty(updateText)) {
       return;

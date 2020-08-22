@@ -60,6 +60,10 @@ ul {
   transform: rotate(-90deg);
   font-weight: 700;
   font-size: 3rem;
+  color: rgb(201, 191, 191);
+}
+
+.todo-form__toggler.active {
   color: #777;
 }
 
@@ -197,6 +201,10 @@ ul {
 .is-hidden {
   display: none;
   padding: 0;
+}
+
+.is-invisible {
+  visibility: hidden;
 }
 
 .active-filter {

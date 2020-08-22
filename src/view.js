@@ -50,7 +50,15 @@ export default class TodoListView {
     // toggleAll event
     this.todoAddForm.addEventListener('click', (event) => {
       if ('toggle-all' === event.target.getAttribute('data-action')) {
+        event.target.classList.toggle('active');
         this.eventEmitter.trigger('toggleAll');
+      }
+    });
+
+    // removeCompleted event
+    this.todoFooter.addEventListener('click', (event) => {
+      if ('remove-completed' === event.target.getAttribute('data-action')) {
+        this.eventEmitter.trigger('removeCompleted');
       }
     });
   }
@@ -62,6 +70,8 @@ export default class TodoListView {
 
     if (todos.length > 0) {
       this.renderFooter(todos);
+    } else {
+      this.todoFooter.classList.add('is-hidden');
     }
   }
 
@@ -80,7 +90,9 @@ export default class TodoListView {
           <span>Completed</span>
         </div>
 
-        <span class="clear">Clear completed</span>
+        <span class="clear ${
+          completedTodos.length === 0 ? 'is-invisible' : ''
+        }" data-action="remove-completed">Clear completed</span>
       `
     );
   }
