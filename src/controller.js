@@ -42,6 +42,25 @@ export default class TodoListController {
       this.model.removeCompleted();
       this.handleUpdate();
     });
+
+    this.eventEmitter.on('filterTodos', (filterType) => {
+      const { todos, activeTodos, completedTodos } = this.model;
+
+      switch (filterType) {
+        case 'all':
+          this.view.render(todos);
+          break;
+        case 'active':
+          this.view.render(activeTodos, todos);
+          break;
+        case 'completed':
+          this.view.render(completedTodos, todos);
+          break;
+        default:
+          console.log(`${filterType} doesn't exist.`);
+          return;
+      }
+    });
   }
 
   handleUpdate() {

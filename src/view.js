@@ -61,15 +61,25 @@ export default class TodoListView {
         this.eventEmitter.trigger('removeCompleted');
       }
     });
+
+    // filterTodos event
+    this.todoFooter.addEventListener('click', (event) => {
+      if ('filter-todos' === event.target.getAttribute('data-action')) {
+        const filterType = event.target.getAttribute('data-filter');
+        this.eventEmitter.trigger('filterTodos', filterType);
+      }
+    });
   }
 
-  render(todos) {
+  // todos are the rendered todos
+  // whereas allTodos is the list of all todos in app
+  render(todos, allTodos = todos) {
     this.todoListUL.innerHTML = '';
     this.todoFooter.innerHTML = '';
     this.buildTodoList(todos);
 
-    if (todos.length > 0) {
-      this.renderFooter(todos);
+    if (allTodos.length > 0) {
+      this.renderFooter(allTodos);
     } else {
       this.todoFooter.classList.add('is-hidden');
     }
@@ -85,9 +95,9 @@ export default class TodoListView {
       `
         <span>${remainingTodos} items left</span>
         <div class="filters">
-          <span>All</span>
-          <span>Active</span>
-          <span>Completed</span>
+          <span data-action="filter-todos" data-filter="all">All</span>
+          <span data-action="filter-todos" data-filter="active">Active</span>
+          <span data-action="filter-todos" data-filter="completed">Completed</span>
         </div>
 
         <span class="clear ${

@@ -207,7 +207,7 @@ ul {
   visibility: hidden;
 }
 
-.active-filter {
+.filters span.active {
   border-color: rgba(230, 90, 90, 0.795);
 }
 
