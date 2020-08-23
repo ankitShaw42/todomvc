@@ -207,10 +207,6 @@ ul {
   visibility: hidden;
 }
 
-.filters span.active {
-  border-color: rgba(230, 90, 90, 0.795);
-}
-
 @media only screen and (max-width: 360px) {
   body {
     transform: scale(0.8);

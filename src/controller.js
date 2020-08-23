@@ -1,60 +1,77 @@
+import TodoListModel from './model';
+import TodoListView from './view';
+import EventEmitter from './event';
+
 export default class TodoListController {
+  /**
+   * Manage view and model updates.
+   * @param {TodoListModel} model
+   * @param {TodoListView} view
+   * @param {EventEmitter} eventEmitter
+   */
   constructor(model, view, eventEmitter) {
     this.model = model;
     this.view = view;
     this.eventEmitter = eventEmitter;
 
     this.handleUpdate();
-    this.addEventListeners();
+    this.handleEvents();
   }
 
-  addEventListeners() {
-    // addTodo Listener
-    this.eventEmitter.on('addTodo', (todoText) => {
-      this.model.addTodo(todoText);
-      this.handleUpdate();
+  /**
+   * Handle app events.
+   */
+  handleEvents() {
+    const { model, view, eventEmitter, handleUpdate } = this;
+
+    // addTodo handler
+    eventEmitter.on('addTodo', (todoText) => {
+      model.addTodo(todoText);
+      handleUpdate();
     });
 
-    // toggleTodo Listener
-    this.eventEmitter.on('toggleTodo', (targetID) => {
-      this.model.toggleTodo(targetID);
-      this.handleUpdate();
+    // toggleTodo handler
+    eventEmitter.on('toggleTodo', (targetID) => {
+      model.toggleTodo(targetID);
+      handleUpdate();
     });
 
-    // deleteTodo Listener
-    this.eventEmitter.on('deleteTodo', (targetID) => {
-      this.model.removeTodo(targetID);
-      this.handleUpdate();
+    // deleteTodo handler
+    eventEmitter.on('deleteTodo', (targetID) => {
+      model.removeTodo(targetID);
+      handleUpdate();
     });
 
-    // editTodo Listener
-    this.eventEmitter.on('editTodo', (targetID, updateText) => {
-      this.model.editTodo(targetID, updateText);
-      this.handleUpdate();
+    // editTodo handler
+    eventEmitter.on('editTodo', (targetID, updateText) => {
+      model.editTodo(targetID, updateText);
+      handleUpdate();
     });
 
-    this.eventEmitter.on('toggleAll', () => {
-      this.model.toggleAllTodos();
-      this.handleUpdate();
+    // toggleAll handler
+    eventEmitter.on('toggleAll', () => {
+      model.toggleAllTodos();
+      handleUpdate();
     });
 
-    this.eventEmitter.on('removeCompleted', () => {
-      this.model.removeCompleted();
-      this.handleUpdate();
+    // removeCompleted handler
+    eventEmitter.on('removeCompleted', () => {
+      model.removeCompleted();
+      handleUpdate();
     });
 
-    this.eventEmitter.on('filterTodos', (filterType) => {
-      const { todos, activeTodos, completedTodos } = this.model;
+    eventEmitter.on('filterTodos', (filterType) => {
+      const { todos, activeTodos, completedTodos } = model;
 
       switch (filterType) {
         case 'all':
-          this.view.render(todos);
+          view.render(todos);
           break;
         case 'active':
-          this.view.render(activeTodos, todos);
+          view.render(activeTodos, todos);
           break;
         case 'completed':
-          this.view.render(completedTodos, todos);
+          view.render(completedTodos, todos);
           break;
         default:
           console.log(`${filterType} doesn't exist.`);
@@ -63,8 +80,11 @@ export default class TodoListController {
     });
   }
 
-  handleUpdate() {
+  /**
+   *  Update app after change.
+   */
+  handleUpdate = () => {
     this.view.render(this.model.todos);
     localStorage.setItem('todos', JSON.stringify(this.model.todos));
-  }
+  };
 }

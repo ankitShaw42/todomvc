@@ -1,78 +1,95 @@
+import EventEmitter from './event';
+
 export default class TodoListView {
+  /**
+   * Manages app rendering.
+   * @param {EventEmitter} eventEmitter
+   */
   constructor(eventEmitter) {
     TodoListView.renderInitialTemplate();
 
     this.eventEmitter = eventEmitter;
+
     this.todoInput = document.getElementById('todo-input');
     this.todoListUL = document.querySelector('.todo-list');
     this.todoAddForm = document.querySelector('.todo-form');
     this.todoFooter = document.querySelector('.app-footer');
 
-    this.handleEvents();
+    this.addEventListeners();
   }
 
-  handleEvents() {
+  /**
+   * Sets up app events.
+   */
+  addEventListeners() {
+    const {
+      eventEmitter,
+      todoAddForm,
+      todoListUL,
+      todoFooter,
+      todoInput,
+    } = this;
+
     // addTodo event
-    this.todoAddForm.addEventListener('submit', (event) => {
+    todoAddForm.addEventListener('submit', (event) => {
       event.preventDefault();
-      this.eventEmitter.trigger('addTodo', this.todoInput.value);
-      this.todoInput.value = '';
+      eventEmitter.trigger('addTodo', todoInput.value);
+      todoInput.value = '';
     });
 
     // toggleTodo event
-    this.todoListUL.addEventListener('click', (event) => {
-      if ('toggle' === event.target.getAttribute('data-action')) {
-        const targetID = event.target.parentNode.id;
-        this.eventEmitter.trigger('toggleTodo', parseInt(targetID));
+    todoListUL.addEventListener('click', ({ target }) => {
+      if ('toggle' === target.getAttribute('data-action')) {
+        const targetID = target.parentNode.id;
+        eventEmitter.trigger('toggleTodo', parseInt(targetID));
       }
     });
 
     // removeTodo event
-    this.todoListUL.addEventListener('click', (event) => {
-      if ('delete' === event.target.getAttribute('data-action')) {
-        const targetID = event.target.parentNode.id;
-        this.eventEmitter.trigger('deleteTodo', parseInt(targetID));
+    todoListUL.addEventListener('click', ({ target }) => {
+      if ('delete' === target.getAttribute('data-action')) {
+        const targetID = target.parentNode.id;
+        eventEmitter.trigger('deleteTodo', parseInt(targetID));
       }
     });
 
     //editTodo event
-    this.todoListUL.addEventListener('focusout', (event) => {
-      if ('edit' === event.target.getAttribute('data-action')) {
-        const targetID = event.target.parentNode.id;
-        this.eventEmitter.trigger(
-          'editTodo',
-          parseInt(targetID),
-          event.target.innerText
-        );
+    todoListUL.addEventListener('focusout', ({ target }) => {
+      if ('edit' === target.getAttribute('data-action')) {
+        const targetID = target.parentNode.id;
+        eventEmitter.trigger('editTodo', parseInt(targetID), target.innerText);
       }
     });
 
     // toggleAll event
-    this.todoAddForm.addEventListener('click', (event) => {
-      if ('toggle-all' === event.target.getAttribute('data-action')) {
-        event.target.classList.toggle('active');
-        this.eventEmitter.trigger('toggleAll');
+    todoAddForm.addEventListener('click', ({ target }) => {
+      if ('toggle-all' === target.getAttribute('data-action')) {
+        target.classList.toggle('active');
+        eventEmitter.trigger('toggleAll');
       }
     });
 
     // removeCompleted event
-    this.todoFooter.addEventListener('click', (event) => {
-      if ('remove-completed' === event.target.getAttribute('data-action')) {
-        this.eventEmitter.trigger('removeCompleted');
+    todoFooter.addEventListener('click', ({ target }) => {
+      if ('remove-completed' === target.getAttribute('data-action')) {
+        eventEmitter.trigger('removeCompleted');
       }
     });
 
     // filterTodos event
-    this.todoFooter.addEventListener('click', (event) => {
-      if ('filter-todos' === event.target.getAttribute('data-action')) {
-        const filterType = event.target.getAttribute('data-filter');
-        this.eventEmitter.trigger('filterTodos', filterType);
+    todoFooter.addEventListener('click', ({ target }) => {
+      if ('filter-todos' === target.getAttribute('data-action')) {
+        const filterType = target.getAttribute('data-filter');
+        eventEmitter.trigger('filterTodos', filterType);
       }
     });
   }
 
-  // todos are the rendered todos
-  // whereas allTodos is the list of all todos in app
+  /**
+   * Renders the app.
+   * @param {any[]} todos
+   * @param {any[]} allTodos
+   */
   render(todos, allTodos = todos) {
     this.todoListUL.innerHTML = '';
     this.todoFooter.innerHTML = '';
@@ -85,6 +102,10 @@ export default class TodoListView {
     }
   }
 
+  /**
+   * Renders the footer for the app.
+   * @param {any[]} todos
+   */
   renderFooter(todos) {
     const completedTodos = todos.filter((todo) => todo.complete);
     const remainingTodos = todos.length - completedTodos.length;
@@ -107,6 +128,10 @@ export default class TodoListView {
     );
   }
 
+  /**
+   * Builds a template from a list of todos.
+   * @param {any[]} todos
+   */
   buildTodoList(todos) {
     const todoItems = todos
       .map(
@@ -125,6 +150,9 @@ export default class TodoListView {
     this.todoListUL.insertAdjacentHTML('beforeend', todoItems);
   }
 
+  /**
+   * Renders initial app template.
+   */
   static renderInitialTemplate() {
     const appTarget = document.getElementById('app');
 

@@ -1,12 +1,12 @@
-class EventEmitter {
+export default class EventEmitter {
   constructor() {
     this.events = {};
   }
 
   /**
-   * Register a callback for an event
+   * Register a callback for an event.
    * @param {string} eventName The target event
-   * @param {Function} callback The callback to be executed on event trigger
+   * @param {Function} callback The callback to be executed on event trigger.
    */
   on(eventName, callback) {
     if (!this.events[eventName]) {
@@ -17,9 +17,9 @@ class EventEmitter {
   }
 
   /**
-   * Trigger all the callbacks for an event
+   * Trigger all the callbacks for an event.
    * @param {string} eventName The target event
-   * @param  {...any} restArgs An array of items that the callback will be passed
+   * @param  {...any} restArgs An array of items that the callback will be passed.
    */
   trigger(eventName, ...restArgs) {
     if (this.events[eventName]) {
@@ -31,7 +31,3 @@ class EventEmitter {
     }
   }
 }
-
-const eventEmitter = new EventEmitter();
-
-export default eventEmitter;
