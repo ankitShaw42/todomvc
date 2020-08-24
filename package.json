@@ -6,7 +6,7 @@
   "scripts": {
     "start": "parcel ./src/public/index.html --open",
     "prebuild": "rm -rf ./dist",
-    "build": "parcel build ./src/public/index.html --public-url ./ --no-source-maps"
+    "build": "parcel build ./src/public/index.html --public-url ./"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4"
